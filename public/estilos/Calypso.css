@@ -1,0 +1,81 @@
+:root {
+    --primario: #E97451;
+    --hover: #C65D3B;
+    --fondo: #FFF5EE;
+    --texto: #5D4037;
+}
+
+body {
+    background-color: var(--fondo);
+    color: var(--texto);
+    font-family: Georgia, 'Times New Roman', serif;
+}
+
+.display-6 {
+    color: var(--primario);
+}
+
+.info-questio {
+    border-left: 5px solid var(--primario);
+}
+
+.texto-advertencia {
+    border-left: 4px solid var(--primario);
+    background-color: rgba(157, 36, 29, 0.08);
+    padding: 1rem;
+    border-radius: 0 8px 8px 0;
+}
+
+.card-question {
+    border-left: 4px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.card-question:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(157, 36, 29, 0.12) !important;
+    border-left: 5px solid var(--primario) !important;
+}
+
+.modal-content {
+    border: none;
+    border-top: 6px solid var(--primario);
+}
+
+.modal-title {
+    color: var(--primario);
+    font-weight: 600;
+}
+
+.btn-primary {
+    background-color: var(--primario);
+    border-color: var(--primario);
+    padding: 0.6rem 1.5rem;
+    transition: all 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: var(--hover);
+    border-color: var(--hover);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.btn-outline-primary {
+    color: var(--primario);
+    border-color: var(--primario);
+    font-weight: 600;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primario);
+    color: #fff;
+}
+
+.form-check-input:checked {
+    background-color: var(--primario);
+    border-color: var(--primario);
+}
+
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.25rem rgba(157, 36, 29, 0.25);
+}

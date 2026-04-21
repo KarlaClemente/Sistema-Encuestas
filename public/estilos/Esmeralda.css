@@ -1,0 +1,97 @@
+:root {
+    --primario: #0d6e4f; /* Verde esmeralda */
+    --hover: #054d38;
+    --fondo: #e8f5f0; /* Verde menta claro */
+    --texto: #1f2937; /* Gris oscuro */
+}
+body {
+    background-color: var(--fondo);
+    color: var(--texto);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.display-6 {
+    color: var(--primario);
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.card-question {
+    border-left: 4px solid transparent;
+    transition: all 0.3s ease;
+}
+.card-question:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 30px rgba(13, 110, 79, 0.12) !important;
+    border-left: 5px solid var(--primario) !important;
+}
+
+.modal-content {
+    border: none;
+    border-top: 6px solid var(--primario);
+}
+.modal-title {
+    color: var(--primario);
+    font-weight: 600;
+}
+
+.modal-footer .btn {
+    min-width: 120px;
+    padding: 0.5rem 1.5rem;
+}
+
+.btn-primary {
+    background-color: var(--primario);
+    border-color: var(--primario);
+    padding: 0.6rem 1.5rem;
+    transition: all 0.2s;
+}
+.btn-primary:hover {
+    background-color: var(--hover);
+    border-color: var(--hover);
+    box-shadow: 0 6px 12px rgba(13, 110, 79, 0.25);
+    transform: translateY(-1px);
+}
+.btn-outline-primary {
+    color: var(--primario);
+    border-color: var(--primario);
+    border-radius: 50px;
+    font-weight: 600;
+}
+.btn-outline-primary:hover {
+    background-color: var(--primario);
+    border-color: var(--primario);
+    color: #ffffff;
+}
+
+.form-check-input:checked {
+    background-color: var(--primario);
+    border-color: var(--primario);
+}
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 79, 0.25);
+}
+
+.info-questio {
+    border-left: 5px solid var(--primario);
+}
+
+.texto-advertencia {
+    border-left: 3px solid var(--primario);
+    background-color: rgba(16, 185, 129, 0.08);
+    padding: 1rem;
+    border-radius: 0 8px 8px 0;
+}
+
+.form-check {
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    transition: background-color 0.2s;
+}
+.form-check:hover {
+    background-color: rgba(13, 110, 79, 0.05);
+}
+.form-check-input {
+    width: 1.2rem;
+    height: 1.2rem;
+}
