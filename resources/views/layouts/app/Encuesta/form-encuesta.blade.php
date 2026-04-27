@@ -6,7 +6,9 @@
 
 @section('content')
 
-    <x-barra-progreso pasoActual="datos" :encuestaId="$encuesta->id ?? null" />
+    @if ($mostrarBarraProgreso)
+        <x-barra-progreso pasoActual="datos" :encuestaId="$encuesta->id ?? null" :mostrarBarraProgreso="$mostrarBarraProgreso"/>
+    @endif
 
     <div class="container py-5">
         <div class="row justify-content-center">
@@ -18,14 +20,24 @@
                     </div>
 
                     <div class="card-body p-4">
+                        <div id="form-error-alert" class="alert alert-danger d-none border-0 shadow-sm rounded-3 mb-4">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-exclamation-octagon-fill fs-4 me-2"></i>
+                                <div>
+                                    <strong class="d-block">Error en el formulario</strong>
+                                    <span id="form-error-message">Corrige los campos marcados en rojo antes de continuar</span>
+                                </div>
+                            </div>
+                        </div>
                         @if(isset($encuesta))
-                            <form action="{{ route('actualizar-encuesta', ['id' => $encuesta->id]) }}" method="post">
+                            <form action="{{ route('actualizar-encuesta', ['id' => $encuesta->id]) }}" method="post" id="create-form">
                             @method('PUT')
                         @else
-                            <form action="{{ route('crear-encuesta', ['grupo' => $grupo]) }}" method="post">
+                            <form action="{{ route('crear-encuesta', ['grupo' => $grupo]) }}" method="post" id="create-form">
                         @endif
 
                             @csrf
+                            <input type="hidden" name="mostrarBarraProgreso" value="{{ $mostrarBarraProgreso }}">
                             <input type="hidden" name="id_grupo" id='id_grupo' value="{{ $encuesta->idGrupo?? $grupo }}">
                             <div class="mb-4">
                                 <label for="titulo" class="form-label fw-bold text-secondary">Título de la Encuesta:</label>
@@ -65,8 +77,9 @@
                                     <label for="fecha_inicio" class="form-label fw-bold text-secondary">Fecha de Inicio:</label>
                                     <div class="input-group">
                                         <span class="input-group-text border-2 bg-light"><i class="bi bi-calendar-event"></i></span>
-                                        <input type="datetime-local" class="form-control border-2 shadow-sm" name="fecha_inicio" id="fecha_inicio" value="{{ $encuesta?->fechaInicio?->format('Y-m-d\TH:i') ?? today()->format('Y-m-d\TH:i') }}">
+                                        <input type="datetime-local" class="form-control border-2 shadow-sm" name="fecha_inicio" id="fecha_inicio" value="{{ $encuesta?->fechaInicio?->format('Y-m-d\TH:i') ?? today()->addDays(1)->format('Y-m-d\TH:i') }}">
                                     </div>
+                                    <small class="error-text d-block mt-1" id="fecha-inicio-text-error" style="color: red; font-weight: bold;"></small>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="fecha_termino" class="form-label fw-bold text-secondary">Fecha de Término:</label>
@@ -74,6 +87,7 @@
                                         <span class="input-group-text border-2 bg-light"><i class="bi bi-calendar-check"></i></span>
                                         <input type="datetime-local" class="form-control border-2 shadow-sm" name="fecha_termino" id="fecha_termino" value="{{ $encuesta?->fechaTermino?->format('Y-m-d\TH:i') ?? today()->addWeeks(1)->format('Y-m-d\TH:i') }}">
                                     </div>
+                                    <small class="error-text d-block mt-1" id="fecha-termino-text-error" style="color: red; font-weight: bold;"></small>
                                 </div>
                             </div>
 
@@ -112,7 +126,6 @@
             });
         @endif
 
-
         function selectEstilo(estilo) {
             if (cardSeleccionada) {
                 cardSeleccionada.classList.remove('border-primary', 'border-3');
@@ -122,5 +135,74 @@
             cardSeleccionada.classList.add('border-primary', 'border-3');
             cardSeleccionada.setAttribute('checked', true);
         }
+
+        /**
+         * Evento que verifica que la fecha de inicio no sea en el pasado
+         */
+        document.getElementById('fecha_inicio').addEventListener('change', function(event) {
+            let fechaInicio = event.target;
+            let fecha = new Date(fechaInicio.value);
+            let ahora = new Date();
+            ahora.setSeconds(0,0);
+            let textError = document.getElementById('fecha-inicio-text-error');
+            if (fecha <= ahora) {
+                addTextError(fechaInicio, textError, 'No se puede crear una encuesta en el pasado');
+            } else {
+                removeTextError(fechaInicio, textError);
+            }
+            let fechaTermino = document.getElementById('fecha_termino');
+            verifyFechaTermino(fechaInicio, fechaTermino);
+        });
+
+        /**
+         * Evento que verifica que el la fecha de termino sea posterior a la fecha de inicio
+         */
+        document.getElementById('fecha_termino').addEventListener('change', function(event) {
+            let fechaTermino = event.target;
+            let fechaInicio = document.getElementById('fecha_inicio');
+            verifyFechaTermino(fechaInicio, fechaTermino);
+        });
+
+        function verifyFechaTermino(fechaInicio, fechaTermino) {
+            let fechaInputString = new Date(fechaInicio.value);
+            let fechaTerminoString = new Date(fechaTermino.value);
+            let textError = document.getElementById('fecha-termino-text-error');
+            if (fechaInputString >= fechaTerminoString) {
+                addTextError(fechaTermino, textError, 'La fecha de termino debe ser posterior a la de inicio');
+            } else {
+                removeTextError(fechaTermino, textError);
+            }
+        }
+
+        function addTextError(input, textError, message) {
+            input.classList.add('is-invalid');
+            textError.innerHTML = message;
+        }
+
+        function removeTextError(input, textError) {
+            input.classList.remove('is-invalid');
+            textError.innerHTML = ' ';
+        }
+
+        document.getElementById('create-form').addEventListener('submit', function(event) {
+            let fechaInicio = document.getElementById('fecha_inicio');
+            let fechaTermino = document.getElementById('fecha_termino');
+            let alertContainer = document.getElementById('form-error-alert');
+            let alertMessage = document.getElementById('form-error-message');
+            if (fechaInicio.classList.contains('is-invalid') || fechaTermino.classList.contains('is-invalid')) {
+                event.preventDefault();
+                alertContainer.classList.remove('d-none');
+                if (fechaInicio.classList.contains('is-invalid') && fechaTermino.classList.contains('is-invalid')) {
+                    alertMessage.innerText = 'Las fechas de inicio y de término son invalidas';
+                } else if (fechaInicio.classList.contains('is-invalid')) {
+                    alertMessage.innerText = 'La fecha de inicio es inválida (no puede ser en el pasado)';
+                } else {
+                    alertMessage.innerText = 'La fecha de término debe ser posterior a la fecha de inicio';
+                }
+                alertContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else {
+                alertContainer.classList.add('d-none');
+            }
+        });
     </script>
 @endsection

@@ -11,25 +11,24 @@ class SvcColumnaMatriz implements SvcComponentePregunta
     /**
      * Obtiene las columnas de una pregunta especificas
      *
-     * @param  int  $idPregunta  ID de la pregunta de la que se obtienen sus columnas
+     * @param int $idPregunta ID de la pregunta de la que se obtienen sus columnas
      * @return DtoColumnaMatrizOut[]
      */
     public function getByPreguntaId(int $idPregunta): array
     {
         $columnas = ColumnaMatriz::where('id_pregunta', $idPregunta)
-            ->orderBy('orden')
-            ->get()
-            ->map(function ($columna) {
-                return DtoColumnaMatrizOut::fromModel($columna);
-            });
+                    ->orderBy('orden')
+                    ->get()
+                    ->map(function($columna){
+                        return DtoColumnaMatrizOut::fromModel($columna);
+                    });
 
         return $columnas->toArray();
     }
 
     /**
      * Almacena la información de la columna
-     *
-     * @param  DtoComponentePreguntaIn  $dto  DTO con la información de la columna
+     * @param DtoComponentePreguntaIn $dto DTO con la información de la columna
      * @return DtoColumnaMatrizOut DTO con la información de la columna creada
      */
     public function store(DtoComponentePreguntaIn $in): DtoColumnaMatrizOut
@@ -41,8 +40,7 @@ class SvcColumnaMatriz implements SvcComponentePregunta
 
     /**
      * Actualiza la información de una columna
-     *
-     * @param  DtoComponentePreguntaIn  $in  DTO con la información de la columna a actualizar
+     * @param DtoComponentePreguntaIn $in DTO con la información de la columna a actualizar
      * @return DtoColumnaMatrizOut DTO con la información de la columna actualizada
      */
     public function update(DtoComponentePreguntaIn $in): DtoColumnaMatrizOut
@@ -55,8 +53,7 @@ class SvcColumnaMatriz implements SvcComponentePregunta
 
     /**
      * Elimina una columna especifica
-     *
-     * @param  int  $id  ID de la columna a eliminar
+     * @param int $id ID de la columna a eliminar
      * @return bool true en caso de que se elimine correctamente, false en caso contrario
      */
     public function delete(int $id): bool

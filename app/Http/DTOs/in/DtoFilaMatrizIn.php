@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\DTOs\in;
 
 readonly class DtoFilaMatrizIn extends DtoComponentePreguntaIn

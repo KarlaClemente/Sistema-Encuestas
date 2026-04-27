@@ -15,11 +15,9 @@ class PreguntaController extends Controller
     public function index()
     {
         $encuestas = $this->svcEncuesta->index();
-        // $plantillas = $this->svcEncuestaPlantilla->index();
 
         return view('layouts.app.home', [
             'encuestas' => $encuestas,
-            //    'plantillas' => $plantillas
         ]);
     }
 
@@ -31,7 +29,7 @@ class PreguntaController extends Controller
 
             return back()->with('success', 'Pregunta creada');
         } catch (\Exception $e) {
-            return back()->withErrors('No se pudo crear la pregunta: '.$e->getMessage());
+            return back()->withErrors('No se pudo crear la pregunta: ' . $e->getMessage());
         }
     }
 
@@ -42,7 +40,7 @@ class PreguntaController extends Controller
 
             return back()->with('success', 'Pregunta eliminada');
         } catch (\Exception $e) {
-            return back()->withErrors('No se pudo eliminar la pregunta: '.$e->getMessage());
+            return back()->withErrors('No se pudo eliminar la pregunta: ' . $e->getMessage());
         }
     }
 
@@ -54,7 +52,7 @@ class PreguntaController extends Controller
 
             return back()->with('success', 'Pregunta modificada');
         } catch (\Exception $e) {
-            return back()->withErrors('No se pudo modificar la pregunta: '.$e->getMessage());
+            return back()->withErrors('No se pudo modificar la pregunta: ' . $e->getMessage());
         }
     }
 }

@@ -8,11 +8,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class GrupoParticipante extends Model
 {
     protected $table = 'grupo_participante';
-
     protected $primaryKey = ['id_grupo', 'id_participante'];
-
     public $incrementing = false;
-
     public $timestamps = false;
 
     protected $fillable = [
@@ -20,7 +17,7 @@ class GrupoParticipante extends Model
         'id_participante',
     ];
 
-    protected $casts = [
+    protected $casts =[
         'id_grupo' => 'integer',
         'id_participante' => 'integer',
     ];

@@ -1,18 +1,16 @@
 @props([
     'pasoActual' => 'datos',
     'encuestaId' => null,
+    'mostrarBarraProgreso' => false,
 ])
 
 @php
     $pasos = [
         'datos' => ['label' => 'Datos',
-                    'icon' => 'bi-clipboard-check',
                     'ruta' => 'editar-encuesta'],
         'preguntas' => ['label' => 'Preguntas',
-                        'icon' => 'bi-question-circle',
                         'ruta' => 'form-preguntas-encuesta'],
         'correos' => ['label' => 'Correos',
-                      'icon' => 'bi-envelope',
                       'ruta' => 'correos-encuesta']
     ];
     
@@ -25,8 +23,7 @@
         <div class="d-flex justify-content-between align-items-center position-relative">
             
             <!-- Línea conectora -->
-            <div class="progress-line position-absolute" 
-                 style="left: 0; right: 0; top: 50%; height: 2px; z-index: 0;">
+            <div class="progress-line position-absolute">
             </div>
             
             @foreach($pasos as $key => $paso)
@@ -41,16 +38,12 @@
                 
                 <div class="paso-wrapper text-center position-relative z-1">
                     @if($esClickeable)
-                        <a href="{{ route($paso['ruta'], $encuestaId) }}" class="paso-icon {{ $esActual ? 'current' : 'completed' }}">
+                        <a href="{{ route($paso['ruta'], ['id' => $encuestaId, 'mostrarBarraProgreso' => $mostrarBarraProgreso]) }}" class="paso-icon {{ $esActual ? 'actual' : 'completado' }}">
                     @else
-                        <div class="paso-icon {{ $esActual ? 'current' : ($estaPendiente ? 'pending' : 'completed') }}"> 
+                        <div class="paso-icon {{ $esActual ? 'actual' : ($estaPendiente ? 'pendiente' : 'completado') }}"> 
                     @endif
 
-                    @if($estaCompleto)
-                        <i class="bi {{ $paso['icon'] }}"></i>
-                    @else
-                        <span class="paso-number">{{ $indicePaso + 1 }}</span>
-                    @endif
+                    <span class="paso-number">{{ $indicePaso + 1 }}</span>
 
                     @if($esClickeable)
                         </a>
@@ -78,20 +71,28 @@
     transition: all 0.3s ease;
     text-decoration: none;
 }
-.barra-progreso .paso-icon.current {
+.barra-progreso .paso-icon.actual {
     background: #0d6efd;
     color: white;
     box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.25);
 }
-.barra-progreso .paso-icon.completed {
+.barra-progreso .paso-icon.completado {
     background: #198754;
     color: white;
 }
-.barra-progreso .paso-icon.pending {
+.barra-progreso .paso-icon.pendiente {
     background: #e9ecef;
     color: #6c757d;
 }
 .barra-progreso .paso-icon:hover {
     transform: scale(1.1);
+}
+.progress-line{
+    left: 0;
+    right: 10px;
+    top: 25%;
+    height: 2px;
+    z-index: 0;
+    background-color: #e9ecef;
 }
 </style>

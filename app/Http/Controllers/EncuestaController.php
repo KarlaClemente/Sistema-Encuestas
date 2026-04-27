@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\DTOs\in\DtoEncuestaIn;
+use App\Http\DTOs\out\DtoEncuestaOut;
 use App\Http\Requests\EncuestaRequest;
 use App\Http\Services\SvcEncuesta;
 use App\Http\Services\SvcEncuestaPlantilla;
@@ -23,15 +24,12 @@ class EncuestaController extends Controller
         private SvcTipoEncuesta $svcTipoEncuesta,
         private SvcGrupo $svcGrupo,
         private SvcTokenParticipante $svcTokenParticipante,
-        private array $estilos = [['Azul', 'Violeta', 'Esmeralda', 'Calypso']],
+        private array $estilos = [['Azul', 'Violeta', 'Calypso']],
     ) {}
 
-    public function index(Request $request)
+    public function index()
     {
-        $soloCompletadas = $request->boolean('completadas', false);
-        $buscar = $request->input('buscar');
-
-        $encuestas = $this->svcEncuesta->index($soloCompletadas, $buscar);
+        $encuestas = $this->svcEncuesta->index();
         $plantillas = $this->svcEncuestaPlantilla->index();
 
         return view('layouts.app.Encuesta.home', [
@@ -50,7 +48,8 @@ class EncuestaController extends Controller
         return view('layouts.app.Encuesta.form-encuesta', ['estilos' => $this->estilos,
             'tipoEncuesta' => $tipoEncuesta,
             'grupo' => $idGrupo,
-            'encuesta' => null]);
+            'encuesta' => null,
+            'mostrarBarraProgreso' => true]);
     }
 
     public function store(EncuestaRequest $request)
@@ -63,7 +62,7 @@ class EncuestaController extends Controller
                 $encuesta = $this->svcEncuesta->store($dto);
                 $this->svcEncuesta->storeTokens($encuesta->id);
 
-                return redirect()->route('form-preguntas-encuesta', ['id' => $encuesta->id])
+                return redirect()->route('form-preguntas-encuesta', ['id' => $encuesta->id, 'mostrarBarraProgreso' => true])
                     ->with('success', 'Encuesta creada');
             });
         } catch (\Exception $e) {
@@ -96,11 +95,14 @@ class EncuestaController extends Controller
         try {
             $this->validateExistenciaEncuesta($id);
             $encuesta = $this->svcEncuesta->show($id);
+            $this->validateEsEditable($encuesta);
             $tipoEncuesta = $this->svcTipoEncuesta->index();
+            $mostrarBarraProgreso = request()->boolean('mostrarBarraProgreso', false);
 
             return view('layouts.app.Encuesta.form-encuesta', ['estilos' => $this->estilos,
                 'tipoEncuesta' => $tipoEncuesta,
-                'encuesta' => $encuesta]);
+                'encuesta' => $encuesta,
+                'mostrarBarraProgreso' => $mostrarBarraProgreso]);
         } catch (\Exception $e) {
             return back()->withErrors('No se pudo editar la encuesta: '.$e->getMessage());
         }
@@ -114,7 +116,10 @@ class EncuestaController extends Controller
             $this->validateFechas($dto);
             $this->svcEncuesta->update($dto, $id);
 
-            return redirect()->route('form-preguntas-encuesta', ['id' => $id])->with('success', 'Encuesta actualizada');
+            if ($request->boolean('mostrarBarraProgreso')) {
+                return redirect()->route('form-preguntas-encuesta', ['id' => $id, 'mostrarBarraProgreso' => true])->with('success', 'Encuesta actualizada');
+            }
+            return redirect()->route('home')->with('success', 'Encuesta actualizada');
         } catch (\Exception $e) {
             return back()->withErrors('No se pudo actualizar la información de la encuesta: '.$e->getMessage());
         }
@@ -122,13 +127,30 @@ class EncuestaController extends Controller
 
     public function editPreguntas(int $id)
     {
-        $this->validateExistenciaEncuesta($id);
-        $tiposPregunta = $this->svcTipoPregunta->index();
-        $encuesta = $this->svcEncuesta->show($id);
+        try {
+            $this->validateExistenciaEncuesta($id);
+            $encuesta = $this->svcEncuesta->show($id);
+            $this->validateEsEditable($encuesta);
+            $tiposPregunta = $this->svcTipoPregunta->index();
+            $mostrarBarraProgreso = request()->boolean('mostrarBarraProgreso', false);
 
-        return view('layouts.app.Encuesta.preguntas-encuesta', ['encuesta' => $encuesta,
-            'tiposPregunta' => $tiposPregunta,
-            'esEncuesta' => true]);
+            return view('layouts.app.Encuesta.preguntas-encuesta', ['encuesta' => $encuesta,
+                'tiposPregunta' => $tiposPregunta,
+                'esEncuesta' => true,
+                'mostrarBarraProgreso' => $mostrarBarraProgreso]);
+        } catch (\Exception $e) {
+            return back()->withErrors('No se pudo actualizar la información de la encuesta: '.$e->getMessage());
+        }
+    }
+
+    public function search(Request $request)
+    {
+        $encuestasABuscar = $request->input('buscar', '');
+        $soloCompletadas = $request->boolean('completadas', false);
+        $encuestas = $this->svcEncuesta->search($encuestasABuscar, $soloCompletadas);
+        return view('layouts.app.Encuesta.home', [
+            'encuestas' => $encuestas,
+        ]);
     }
 
     private function validateFechas(DtoEncuestaIn $dto)
@@ -142,6 +164,13 @@ class EncuestaController extends Controller
     {
         if ($this->svcEncuesta->show($id) === null) {
             throw new \Exception('No existe la encuesta');
+        }
+    }
+
+    private function validateEsEditable(DtoEncuestaOut $encuesta)
+    {
+        if ($encuesta->completada || Carbon::parse($encuesta->fechaInicio)->isPast()) {
+            throw new \Exception('No se pueden editar encuestas que ya iniciaron');
         }
     }
 }

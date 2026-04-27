@@ -1,6 +1,6 @@
 <?php
-
 namespace App\Http\DTOs\in;
+
 
 abstract readonly class DtoComponentePreguntaIn
 {
@@ -21,7 +21,7 @@ abstract readonly class DtoComponentePreguntaIn
             $this->getIdNombre() => $this->id,
             'id_pregunta' => $this->idPregunta,
             'texto' => $this->texto,
-            'orden' => $this->orden,
+            'orden' => $this->orden
         ];
     }
 }

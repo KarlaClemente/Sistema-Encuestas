@@ -8,11 +8,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Respuesta extends Model
 {
     protected $table = 'respuesta';
-
     protected $primaryKey = 'id_respuesta';
-
     public $timestamps = false;
-
     public $incrementing = true;
 
     protected $fillable = [

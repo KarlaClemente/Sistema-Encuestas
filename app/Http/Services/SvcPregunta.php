@@ -17,7 +17,7 @@ class SvcPregunta
         private SvcOpcionPregunta $svcOpcion,
         private SvcFilaMatriz $svcFila,
         private SvcColumnaMatriz $svcColumna,
-    ) {}
+    ){}
 
     /**
      * Obtiene la pregunta junto con sus opciones, filas o columnas, dependiendo del tipo de pregunta que sea
@@ -35,7 +35,7 @@ class SvcPregunta
     private function validateOrigen(DtoPreguntaIn $dto): void
     {
         $ambos = isset($dto->idEncuesta) && isset($dto->idEncuestaPlantilla);
-        $ninguno = ! isset($dto->idEncuesta) && ! isset($dto->idEncuestaPlantilla);
+        $ninguno = !isset($dto->idEncuesta) && !isset($dto->idEncuestaPlantilla);
 
         if ($ambos || $ninguno) {
             throw new \Exception('La pregunta debe pertenecer a una encuesta o plantilla, no a ambas ni a ninguna.');
@@ -56,15 +56,14 @@ class SvcPregunta
             }
         } elseif ($nombreTipo === 'matriz' && (empty($dto->filasMatriz) || empty($dto->columnasMatriz))) {
             throw new \Exception('Las preguntas de tipo matriz deben tener filas y columnas');
-        } elseif ($nombreTipo === 'abierta' && (! empty($dto->opciones) || ! empty($dto->filasMatriz) || ! empty($dto->columnasMatriz) || $dto->minSeleccion > 0 || $dto->maxSeleccion > 0)) {
+        } elseif ($nombreTipo === 'abierta' && (!empty($dto->opciones) || !empty($dto->filasMatriz) || !empty($dto->columnasMatriz) || $dto->minSeleccion > 0 || $dto->maxSeleccion > 0)) {
             throw new \Exception('Las preguntas abiertas no deben tener opciones, filas, columnas ni un mínimo o máximo de selección');
         }
     }
 
     /**
      * Almacena la información de la pregunta, dependiendo del tipo de pregunta que sea
-     *
-     * @param  DtoPreguntaIn  $dto  DTO con la información de la pregunta a almacenar
+     * @param DtoPreguntaIn $dto DTO con la información de la pregunta a almacenar
      * @return DtoPreguntaOut DTO con la información de la pregunta recién creada
      */
     public function store(DtoPreguntaIn $dto): DtoPreguntaOut
@@ -89,10 +88,10 @@ class SvcPregunta
     /**
      * Crea los componentes(opciones, filas o columnas) de una pregunta
      *
-     * @param  array  $componentes  Arreglo con la información de los componentes a crear
-     * @param  int  $idPregunta  id de la pregunta a la que pertenece el componente
-     * @param  SvcComponentePregunta  $svc  Servicio del componente a guardar
-     * @param  string  $claseDto  El nombre de la clase del dto del componente a guardar
+     * @param array $componentes Arreglo con la información de los componentes a crear
+     * @param int $idPregunta id de la pregunta a la que pertenece el componente
+     * @param SvcComponentePregunta $svc Servicio del componente a guardar
+     * @param string $claseDto El nombre de la clase del dto del componente a guardar
      */
     private function createComponentes(array $componentes, int $idPregunta, SvcComponentePregunta $svc, string $claseDto): void
     {
@@ -106,7 +105,7 @@ class SvcPregunta
     /**
      * Elimina una pregunta específica junto con sus componentes(opciones, filas o columnas)
      *
-     * @param  int  $id  ID de la pregunta a eliminar
+     * @param int $id ID de la pregunta a eliminar
      * @return bool true en caso de que se haya eliminado correctamente, false en caso contrario
      */
     public function delete(int $id): bool
@@ -127,12 +126,12 @@ class SvcPregunta
             // Se actualiza el orden de las demás preguntas de la encuesta
             if (isset($pregunta->id_encuesta)) {
                 Pregunta::where('id_encuesta', $pregunta->id_encuesta)
-                    ->where('orden', '>', $pregunta->orden)
-                    ->decrement('orden');
+                        ->where('orden', '>', $pregunta->orden)
+                        ->decrement('orden');
             } else {
                 Pregunta::where('id_encuesta_plantilla', $pregunta->id_encuesta_plantilla)
-                    ->where('orden', '>', $pregunta->orden)
-                    ->decrement('orden');
+                        ->where('orden', '>', $pregunta->orden)
+                        ->decrement('orden');
             }
 
             return $pregunta->delete();
@@ -141,9 +140,8 @@ class SvcPregunta
 
     /**
      * Elimina un conjunto de componentes
-     *
-     * @param  array  $componentes  Arreglo de Dto's Out de los componentes a eliminar
-     * @param  SvcComponentePregunta  $svc  Servicio correspondiente al componente a agregar
+     * @param array $componentes Arreglo de Dto's Out de los componentes a eliminar
+     * @param SvcComponentePregunta $svc Servicio correspondiente al componente a agregar
      */
     private function deleteComponentes(array $componentes, SvcComponentePregunta $svc): void
     {
@@ -154,13 +152,11 @@ class SvcPregunta
 
     /**
      * Actualiza la información de la pregunta
-     *
-     * @param  DtoPreguntaIn  $dto  DTO con la información de la pregunta a actualizar
-     * @param  int  $id  ID de la pregunta a actualizar
+     * @param DtoPreguntaIn $dto DTO con la información de la pregunta a actualizar
+     * @param int $id ID de la pregunta a actualizar
      */
     public function update(DtoPreguntaIn $dto, int $id): DtoPreguntaOut
     {
-        // Verificar caso de matriz para el updade
         $this->validateOrigen($dto);
         $tipo = $this->svcTipoPregunta->getById($dto->idTipoPregunta);
         $nombreTipo = $tipo->nombre;
@@ -210,22 +206,21 @@ class SvcPregunta
 
     /**
      * Actualiza la información de un conjunto de componentes
-     *
-     * @param  array  $componentesNuevos  Arreglo que contiene la información de los componentes a acualizar
-     * @param  array  $componentesAnteriores  Arreglo que cocntiene la información de los componentes que tenía la pregunta anteriormente
-     * @param  string  $nombreId  Nombre asignado al id del tipo de componente
-     * @param  SvcComponentePregunta  $svc  Servicio correspondiente al tipo de los componentes a actualizar
-     * @param  string  $claseDto  Nombre del Dto correspondiente al tipo de los componentes a actualizar
-     * @param  int  $id  Id de la pregunta a la que corresponden los componentes
+     * @param array $componentesNuevos Arreglo que contiene la información de los componentes a acualizar
+     * @param array $componentesAnteriores Arreglo que cocntiene la información de los componentes que tenía la pregunta anteriormente
+     * @param string $nombreId Nombre asignado al id del tipo de componente
+     * @param SvcComponentePregunta $svc Servicio correspondiente al tipo de los componentes a actualizar
+     * @param string $claseDto Nombre del Dto correspondiente al tipo de los componentes a actualizar
+     * @param int $id Id de la pregunta a la que corresponden los componentes
      */
     private function updateComponentes(array $componentesNuevos, array $componentesAnteriores, string $nombreId, SvcComponentePregunta $svc, string $claseDto, int $id): void
     {
         $componentesNuevosId = array_map(function ($componenteNuevo) use ($nombreId) {
-            return $componenteNuevo[$nombreId] ?? null;
-        }, $componentesNuevos);
+                                    return $componenteNuevo[$nombreId]?? null;
+                                }, $componentesNuevos);
         // Se eliminan los componentes que ya no se encuentran en los componentes nuevos
         foreach ($componentesAnteriores as $componente) {
-            if (! in_array($componente->id, $componentesNuevosId)) {
+            if (!in_array($componente->id, $componentesNuevosId)) {
                 $svc->delete($componente->id);
             }
         }

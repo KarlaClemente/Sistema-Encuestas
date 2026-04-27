@@ -9,7 +9,7 @@ final readonly class DtoTipoPreguntaOut
     public function __construct(
         public int $idTipoPregunta,
         public string $nombre,
-    ) {}
+    ){}
 
     public static function fromModel(TipoPregunta $tipoPregunta): self
     {

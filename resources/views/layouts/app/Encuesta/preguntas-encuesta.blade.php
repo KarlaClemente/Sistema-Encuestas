@@ -9,8 +9,9 @@
 @endsection
 
 @section('content')
-
-<x-barra-progreso pasoActual="preguntas" :encuestaId="$encuesta->id" />
+@if ($mostrarBarraProgreso)
+    <x-barra-progreso pasoActual="preguntas" :encuestaId="$encuesta->id" :mostrarBarraProgreso="$mostrarBarraProgreso" />
+@endif
 
 <!-- Información de la encuesta -->
 <div class="container py-5" style="max-width: 1000px;">
@@ -319,14 +320,14 @@
                                     <input type="hidden" name="${nombreArr}[${componente.orden-1}][orden]" value="${componente.orden}">
                                     <input type="text" name="${nombreArr}[${componente.orden-1}][texto]" class="form-control" placeholder="${placeholder} ${componente.orden}" value="${componente.texto}" required>
                                     <button type="button" class="btn btn-danger" onclick="deleteComponente(${componente.orden}, '${tipo}', '${nombreArr}', ${minNumComponentes}, '${mensajeAlert}', '${placeholder}')">
-                                        <i class="bi bi-trash"></i> Eliminar
+                                        <i class="bi bi-trash"></i>
                                     </button>
                                 </div>`;
             } else {
                 nuevoComponente = `<div class="input-group mb-3" id="${tipo}-${contadores[nombreArr]}">
                                     <input type="text" name="${nombreArr}[${contadores[nombreArr]-1}][texto]" class="form-control" placeholder="${placeholder} ${contadores[nombreArr]}" required>
                                     <button type="button" class="btn btn-danger" onclick="deleteComponente(${contadores[nombreArr]}, '${tipo}', '${nombreArr}', ${minNumComponentes}, '${mensajeAlert}', '${placeholder}')">
-                                        <i class="bi bi-trash"></i> Eliminar
+                                        <i class="bi bi-trash"></i>
                                     </button>
                                 </div>`;
             }

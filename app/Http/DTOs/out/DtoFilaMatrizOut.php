@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\DTOs\out;
 
 use App\Models\FilaMatriz;

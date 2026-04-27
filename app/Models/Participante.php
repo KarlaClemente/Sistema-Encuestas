@@ -1,18 +1,14 @@
 <?php
 
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Participante extends Model
 {
     protected $table = 'participante';
-
     protected $primaryKey = 'id_participante';
-
     public $timestamps = false;
-
     public $incrementing = true;
 
     protected $fillable = [

@@ -2,23 +2,21 @@
 
 namespace App\Http\Services;
 
-use App\Http\DTOs\out\DtoTipoPreguntaOut;
 use App\Models\TipoPregunta;
+use App\Http\DTOs\out\DtoTipoPreguntaOut;
 
 class SvcTipoPregunta
 {
     /**
      * Obtiene todos los tipos de preguntas
-     *
      * @return DtoPreguntasOut[]
      */
     public function index(): array
     {
         $dtos = TipoPregunta::all()
-            ->map(function ($tipo) {
+            ->map(function($tipo) {
                 return DtoTipoPreguntaOut::fromModel($tipo);
             });
-
         return $dtos->toArray();
     }
 
@@ -28,7 +26,6 @@ class SvcTipoPregunta
     public function getById(int $id): DtoTipoPreguntaOut
     {
         $tipoPregunta = TipoPregunta::findOrFail($id);
-
         return DtoTipoPreguntaOut::fromModel($tipoPregunta);
     }
 

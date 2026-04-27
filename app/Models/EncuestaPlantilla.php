@@ -3,17 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class EncuestaPlantilla extends Model
 {
     protected $table = 'encuesta_plantilla';
-
     protected $primaryKey = 'id_encuesta_plantilla';
-
     public $timestamps = false;
-
     public $incrementing = true;
 
     protected $fillable = [

@@ -5,97 +5,98 @@
 @endsection
 
 @section('content')
-    <div class="container py-5">
-        <!-- Botones de acción -->
-        <div class="row mb-4">
-            <div class="col-md-6">
+<div class="container py-5" style="max-width: 1600px;">
+    
+    <div class="row mb-5 align-items-center">
+        <div class="col-md-8">
+            <h1 class="display-5 fw-bold text-dark mb-1">Panel de Encuestas</h1>
+        </div>
+        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+            <div class="d-flex gap-2 justify-content-md-end">
                 <div class="dropdown">
-                    <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-plus-circle me-2"></i>Crear encuesta
+                    <button class="btn btn-guinda btn-lg dropdown-toggle rounded-pill shadow-sm" type="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-plus-lg me-2"></i>Crear Nuevo
                     </button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{{ route('form-crear-encuesta', ['grupo' => 1]) }}">Una encuesta</a></li>
-                        <li><a class="dropdown-item" href="#">Una plantilla para varias encuestas</a></li>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+                        <li>
+                            <a class="dropdown-item py-2" href="{{ route('form-crear-encuesta', ['grupo' => 1]) }}">
+                                <i class="bi bi-journal-plus me-2 text-guinda"></i>Nueva Encuesta
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item py-2" href="#">
+                                <i class="bi bi-layers me-2 text-guinda"></i>Nueva Plantilla
+                            </a>
+                        </li>
                     </ul>
                 </div>
-            </div>
-            <div class="col-md-6 text-md-end mt-2 mt-md-0">
-                <a href="#" class="btn btn-secondary">
-                    <i class="bi bi-key me-2"></i>Tokens de Participantes
+                <a href="#" class="btn btn-outline-secondary btn-lg rounded-pill shadow-sm" title="Gestionar Tokens">
+                    <i class="bi bi-key"></i>
+                    Gestionar Tokens
                 </a>
             </div>
         </div>
+    </div>
 
-        <!-- Filtros -->
-        <form method="GET" action="{{ route('home') }}" class="card mb-4">
-            <div class="card-body">
-                <div class="row g-3 align-items-center">
-                    <div class="col-md-8">
-                        <input type="text" name="buscar" class="form-control" placeholder="Buscar encuestas..." value="{{ request('buscar') }}">
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="completadas" id="encuestasCompletadas" value="1" {{ request('completadas') ? 'checked' : '' }}>
-                            <label class="form-check-label" for="encuestasCompletadas">
-                                Solo encuestas completadas
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </form>
-
-        <!-- Encuestas -->
-        <h5 class="mb-3">Encuestas</h5>
-        <div class="row g-3 mb-4">
-            @forelse($encuestas as $encuesta)
-                <x-encuesta.card
-                    titulo="{{ $encuesta->titulo }}"
-                    descripcion="{{ $encuesta->descripcion }}"
-                    completada="{{ $encuesta->completada }}"
-                    fechaTermino="{{ $encuesta->fechaTermino }}"
-                    id="{{ $encuesta->id }}"
-                    esEncuesta=true
-                />
-            @empty
-                <div class="col-12">
-                    <p class="text-muted">No hay encuestas disponibles.</p>
-                </div>
-            @endforelse
-        </div>
-
-        <!-- Plantillas -->
-        <h5 class="mb-3">Plantillas</h5>
-        <div class="row g-3">
-            @forelse($plantillas as $plantilla)
-                <div class="col-md-6 col-lg-4">
-                    <div class="card h-100 border-warning">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ $plantilla->titulo }}</h5>
-                            <p class="card-text text-muted small">{{ $plantilla->descripcion }}</p>
-                            <p class="mb-0"><small><strong>Tipo:</strong> {{ $plantilla->tipoEncuesta->nombre ?? 'N/A' }}</small></p>
-                        </div>
-                        <div class="card-footer bg-transparent">
-                            <div class="d-flex gap-2">
-                                <a href="#" class="btn btn-sm btn-outline-warning">
-                                    <i class="bi bi-pencil"></i> Editar
-                                </a>
-                                <form action="#" method="POST" class="d-inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Eliminar esta plantilla?')">
-                                        <i class="bi bi-trash"></i> Eliminar
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
+    {{-- Barra de Búsqueda y Filtros --}}
+    <div class="card border-0 shadow-sm rounded-4 mb-5 overflow-hidden">
+        <div class="card-body p-1 bg-white">
+            <form id="form-busqueda" action="{{ route('buscar-encuestas') }}" class="row g-0">
+                <div class="col-md-7">
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-0 ps-4">
+                            <i class="bi bi-search text-muted"></i>
+                        </span>
+                        <input type="text" id="input-buscar" name="buscar" 
+                               class="form-control border-0 py-4 shadow-none" 
+                               placeholder="Buscar por título...">
                     </div>
                 </div>
-            @empty
-                <div class="col-12">
-                    <p class="text-muted">No hay plantillas disponibles.</p>
+                <div class="col-md-3 d-flex align-items-center justify-content-center border-start border-end my-2">
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input" type="checkbox" name="completadas" id="encuestasCompletadas" value="1">
+                        <label class="form-check-label fw-medium text-secondary" for="encuestasCompletadas">Solo concluidas</label>
+                    </div>
                 </div>
-            @endforelse
+                <div class="col-md-2 p-2">
+                    <button type="submit" class="btn btn-guinda w-100 h-100 rounded-3 fw-bold">
+                        Filtrar
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
+
+    <div class="row">
+        <div class="col-12 mb-3 d-flex justify-content-between align-items-center">
+            <h4 class="fw-bold text-dark-emphasis mb-0">Encuestas</h4>
+        </div>
+    </div>
+
+    <div class="row g-4" id="encuestas-plantillas">
+        @forelse($encuestas as $encuesta)
+            <x-encuesta.card
+                :titulo="$encuesta->titulo"
+                :descripcion="$encuesta->descripcion"
+                :completada="$encuesta->completada"
+                :fechaInicio="$encuesta->fechaInicio"
+                :fechaTermino="$encuesta->fechaTermino"
+                :id="$encuesta->id"
+                :esEncuesta="true"
+                :grupo="$encuesta->nombreGrupo"
+            />
+        @empty
+            <div class="col-12 text-center py-5">
+                <div class="mb-3">
+                    <i class="bi bi-search text-muted display-1 opacity-25"></i>
+                </div>
+                <h4 class="text-muted">No se encontró ninguna encuesta</h4>
+            </div>
+        @endforelse
+    </div>
+</div>
+
+<style>
+    
+</style>
 @endsection

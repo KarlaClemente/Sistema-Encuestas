@@ -9,11 +9,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class OpcionPregunta extends Model
 {
     protected $table = 'opcion_pregunta';
-
     protected $primaryKey = 'id_opcion';
-
     public $timestamps = false;
-
     public $incrementing = true;
 
     protected $fillable = [

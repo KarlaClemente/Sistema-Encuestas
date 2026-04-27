@@ -8,11 +8,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Grupo extends Model
 {
     protected $table = 'grupo';
-
     protected $primaryKey = 'id_grupo';
-
     public $timestamps = false;
-
     public $incrementing = true;
 
     protected $fillable = [

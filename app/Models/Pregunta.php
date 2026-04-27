@@ -3,17 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Pregunta extends Model
 {
     protected $table = 'pregunta';
-
     protected $primaryKey = 'id_pregunta';
-
     public $timestamps = false;
-
     public $incrementing = true;
 
     protected $fillable = [
@@ -27,7 +24,7 @@ class Pregunta extends Model
     ];
 
     protected $casts = [
-        'id_encuesta' => 'integer',
+        'id_encuesta'=> 'integer',
         'id_encuesta_plantilla' => 'integer',
         'id_tipo_pregunta' => 'integer',
         'orden' => 'integer',

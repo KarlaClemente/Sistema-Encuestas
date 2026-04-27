@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\DTOs\in;
 
 use Illuminate\Http\Request;
@@ -7,7 +6,7 @@ use Illuminate\Http\Request;
 final readonly class DtoPreguntaIn
 {
     public function __construct(
-        public ?int $idPregunta,
+        public ?int $idPregunta = null,
         public string $texto,
         public int $orden,
         public int $idTipoPregunta,
@@ -34,11 +33,11 @@ final readonly class DtoPreguntaIn
             idTipoPregunta: (int) $arr['id_tipo_pregunta'],
             idEncuestaPlantilla: isset($arr['id_encuesta_plantilla']) ? (int) $arr['id_encuesta_plantilla'] : null,
             idEncuesta: isset($arr['id_encuesta']) ? (int) $arr['id_encuesta'] : null,
-            opciones: isset($arr['opciones']) ? $arr['opciones'] : [],
-            filasMatriz: isset($arr['filas']) ? $arr['filas'] : [],
-            columnasMatriz: isset($arr['columnas']) ? $arr['columnas'] : [],
-            minSeleccion : (int) ($arr['min_seleccion'] ?? 0),
-            maxSeleccion: (int) ($arr['max_seleccion'] ?? 0),
+            opciones: isset($arr['opciones'])? $arr['opciones'] : [],
+            filasMatriz: isset($arr['filas'])? $arr['filas'] : [],
+            columnasMatriz: isset($arr['columnas'])? $arr['columnas'] : [],
+            minSeleccion : (int) ($arr['min_seleccion']?? 0),
+            maxSeleccion: (int) ($arr['max_seleccion']?? 0),
         );
     }
 

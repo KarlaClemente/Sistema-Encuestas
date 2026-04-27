@@ -8,11 +8,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Plantilla extends Model
 {
     protected $table = 'plantilla';
-
     protected $primaryKey = 'id_plantilla';
-
     public $timestamps = false;
-
     public $incrementing = true;
 
     protected $fillable = [
@@ -20,7 +17,7 @@ class Plantilla extends Model
         'asunto',
         'cuerpo',
     ];
-
+    
     public function correos(): HasMany
     {
         return $this->hasMany(Correo::class, 'id_plantilla', 'id_plantilla');

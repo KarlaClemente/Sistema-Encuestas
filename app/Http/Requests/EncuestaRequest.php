@@ -31,7 +31,7 @@ class EncuestaRequest extends FormRequest
             'fecha_inicio' => 'required|date|',
             'fecha_termino' => 'required|date|after:fecha_inicio',
             'texto_advertencia' => 'nullable|string',
-            'estilo' => 'required_without:id_plantilla|string|max:100',
+            'estilo' => 'required_without:id_plantilla|string|max:100'
         ];
     }
 }

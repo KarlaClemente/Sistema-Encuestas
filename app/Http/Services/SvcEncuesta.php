@@ -17,6 +17,7 @@ class SvcEncuesta
         private SvcTokenEncuesta $svcTokenEncuesta,
     ) {}
 
+    
     public function store(DtoEncuestaIn $in): DtoEncuestaOut
     {
         $encuesta = DtoEncuestaOut::fromModel(Encuesta::create($in->toArray()));
@@ -95,5 +96,25 @@ class SvcEncuesta
         return $encuesta->preguntas
             ->map(fn ($p) => DtoPreguntaOut::fromModel($p))
             ->toArray();
+    }
+
+    /**
+     * Se obtienen todas las encuestas que no provienen de una plantilla a partir de un titulo y si estan completados
+     * @param string $titulo El titulo de la encuesta a buscar
+     * @param bool $estaCompletado True en caso de que solo se busquen las encuestas que estan comlpetadas, False en caso de buscar las encuestas que estan en progreso
+     * @return DtoEncuestaOut[] Arreglo con los DTO's de las encuestas que cumplan con los filtros proporcionados
+     */
+    public function search(?string $titulo=null, bool $estaCompletado=false): array
+    {
+        $encuestas = Encuesta::whereNull('id_plantilla');
+        if ($titulo !== null && $titulo !== '') {
+            $encuestas->where('titulo', 'like', '%'.$titulo.'%');
+        }
+        if ($estaCompletado) {
+            $encuestas->where('completada', true);
+        }
+        $encuestas = $encuestas->get();
+        return $encuestas->map(fn($encuesta) => DtoEncuestaOut::fromModelWithoutPreguntas($encuesta))
+                         ->toArray();
     }
 }
