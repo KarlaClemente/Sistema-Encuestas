@@ -11,6 +11,7 @@ use App\Http\Services\SvcGrupo;
 use App\Http\Services\SvcTipoEncuesta;
 use App\Http\Services\SvcTipoPregunta;
 use App\Http\Services\SvcTokenParticipante;
+use App\Http\Services\SvcPlantilla;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -24,6 +25,7 @@ class EncuestaController extends Controller
         private SvcTipoEncuesta $svcTipoEncuesta,
         private SvcGrupo $svcGrupo,
         private SvcTokenParticipante $svcTokenParticipante,
+        private SvcPlantilla $svcPlantilla,
         private array $estilos = [['Azul', 'Violeta', 'Calypso']],
     ) {}
 
@@ -49,6 +51,7 @@ class EncuestaController extends Controller
             'tipoEncuesta' => $tipoEncuesta,
             'grupo' => $idGrupo,
             'encuesta' => null,
+            'esEncuesta' => true,
             'mostrarBarraProgreso' => true]);
     }
 
@@ -56,11 +59,13 @@ class EncuestaController extends Controller
     {
         try {
             $dto = DtoEncuestaIn::fromRequest($request);
-            $this->validateFechas($dto);
+            $this->svcEncuesta->validateFechas($dto);
 
             return DB::transaction(function () use ($dto) {
                 $encuesta = $this->svcEncuesta->store($dto);
                 $this->svcEncuesta->storeTokens($encuesta->id);
+                $plantillas = $this->svcPlantilla->createBasePlantilla($encuesta->id, true);
+                $this->svcEncuesta->storeCorreos($encuesta->id, 'invitacion', Carbon::parse($encuesta->fechaInicio), 0);
 
                 return redirect()->route('form-preguntas-encuesta', ['id' => $encuesta->id, 'mostrarBarraProgreso' => true])
                     ->with('success', 'Encuesta creada');
@@ -73,12 +78,13 @@ class EncuestaController extends Controller
     public function destroy(int $id)
     {
         try {
-            $this->validateExistenciaEncuesta($id);
+            $this->svcEncuesta->validateExistenciaEncuesta($id);
 
             return DB::transaction(function () use ($id) {
+                $this->svcEncuesta->deletePlantillas($id);
                 $idTokensParticipantes = $this->svcEncuesta->deleteTokensEncuesta($id);
-                foreach ($idTokensParticipantes as $id) {
-                    $this->svcTokenParticipante->delete($id);
+                foreach ($idTokensParticipantes as $tokenId) {
+                    $this->svcTokenParticipante->delete($tokenId);
                 }
                 $this->svcEncuesta->deleteEncuesta($id);
 
@@ -93,15 +99,16 @@ class EncuestaController extends Controller
     public function edit(int $id)
     {
         try {
-            $this->validateExistenciaEncuesta($id);
+            $this->svcEncuesta->validateExistenciaEncuesta($id);
             $encuesta = $this->svcEncuesta->show($id);
-            $this->validateEsEditable($encuesta);
+            $this->svcEncuesta->validateEsEditable($encuesta);
             $tipoEncuesta = $this->svcTipoEncuesta->index();
             $mostrarBarraProgreso = request()->boolean('mostrarBarraProgreso', false);
 
             return view('layouts.app.Encuesta.form-encuesta', ['estilos' => $this->estilos,
                 'tipoEncuesta' => $tipoEncuesta,
                 'encuesta' => $encuesta,
+                'esEncuesta' => true,
                 'mostrarBarraProgreso' => $mostrarBarraProgreso]);
         } catch (\Exception $e) {
             return back()->withErrors('No se pudo editar la encuesta: '.$e->getMessage());
@@ -111,11 +118,13 @@ class EncuestaController extends Controller
     public function update(EncuestaRequest $request, int $id)
     {
         try {
-            $this->validateExistenciaEncuesta($id);
+            $this->svcEncuesta->validateExistenciaEncuesta($id);
             $dto = DtoEncuestaIn::fromRequest($request);
-            $this->validateFechas($dto);
-            $this->svcEncuesta->update($dto, $id);
-
+            $this->svcEncuesta->validateFechas($dto);
+            DB::transaction(function () use ($dto, $id) {
+                $encuesta = $this->svcEncuesta->update($dto, $id);
+                $this->svcEncuesta->updateFechaEnvioInvitaciones($encuesta->id, $encuesta->fechaInicio);
+            });
             if ($request->boolean('mostrarBarraProgreso')) {
                 return redirect()->route('form-preguntas-encuesta', ['id' => $id, 'mostrarBarraProgreso' => true])->with('success', 'Encuesta actualizada');
             }
@@ -128,9 +137,9 @@ class EncuestaController extends Controller
     public function editPreguntas(int $id)
     {
         try {
-            $this->validateExistenciaEncuesta($id);
+            $this->svcEncuesta->validateExistenciaEncuesta($id);
             $encuesta = $this->svcEncuesta->show($id);
-            $this->validateEsEditable($encuesta);
+            $this->svcEncuesta->validateEsEditable($encuesta);
             $tiposPregunta = $this->svcTipoPregunta->index();
             $mostrarBarraProgreso = request()->boolean('mostrarBarraProgreso', false);
 
@@ -151,26 +160,5 @@ class EncuestaController extends Controller
         return view('layouts.app.Encuesta.home', [
             'encuestas' => $encuestas,
         ]);
-    }
-
-    private function validateFechas(DtoEncuestaIn $dto)
-    {
-        if ($dto->fechaTermino->isBefore(Carbon::now()->startOfDay())) {
-            throw new \Exception('No se pueden tener encuestas que terminen en el pasado');
-        }
-    }
-
-    private function validateExistenciaEncuesta(int $id)
-    {
-        if ($this->svcEncuesta->show($id) === null) {
-            throw new \Exception('No existe la encuesta');
-        }
-    }
-
-    private function validateEsEditable(DtoEncuestaOut $encuesta)
-    {
-        if ($encuesta->completada || Carbon::parse($encuesta->fechaInicio)->isPast()) {
-            throw new \Exception('No se pueden editar encuestas que ya iniciaron');
-        }
     }
 }

@@ -1,52 +1,49 @@
 <?php
+namespace App\Http\DTOs\in;
 
-namespace App\Http\DTOs;
-
-use App\DTOs\DtoPlantilla;
 use Illuminate\Http\Request;
+use App\Http\DTOs\DtoPlantilla;
+use Carbon\Carbon;
 
-readonly class DtoCorreo extends DtoPlantilla
+final readonly class DtoCorreoIn
 {
     public function __construct(
-        ?int $id,
-        public ?int $idTokenParticipante,
-        public int $idPlantilla,
-        string $tipo,
-        string $asunto,
-        string $cuerpo,
-        public DateTime $fechaEnvio,
-        public int $nuemeroRecordatorio
-    ) {
-        parent::__construct($id, $tipo, $asunto, $cuerpo);
-    }
-
-    public static function fromRequest(Request $request): self
-    {
-        return self::fromArray($request->all());
-    }
-
-    public static function fromArray(array $arr): self
+        public ?int $id,
+        public DtoPlantilla $plantilla,
+        public int $idTokenParticipante,
+        public Carbon $fechaEnvio,
+        public int $numeroRecordatorio,
+        public string $estado,
+    ) {}
+    
+    public static function crearParaEnvio(DtoPlantilla $plantilla, int $idTokenParticipante, Carbon $fechaEnvio, int $numeroRecordatorio): self
     {
         return new self(
-            idTokenParticipante: $arr['id_token_participante'] ?? null,
-            idPlantilla: $arr['id_plantilla'],
-            tipo: $arr['tipo'],
-            aasunto: $arr['asunto'],
-            cuerpo: $arr['cuerpo'],
-            fechaEnvio: $arr['fecha_envio'],
-            numeroRecordatorio: $arr['numero_recordatorio'],
+            id: null,
+            plantilla: $plantilla,
+            idTokenParticipante: $idTokenParticipante,
+            fechaEnvio: $fechaEnvio,
+            numeroRecordatorio: $numeroRecordatorio,
+            estado: 'pendiente',
         );
     }
 
-    public static function toArray(): array
+    public function toArray(): array
     {
-        return array_merge([
-            'id_correo' => $this->$id,
-            'id_token_participante' => $this->$idTokenParticipante,
-            'id_plantilla' => $this->$idPlantilla,
-            'fechaEnvio' => $this->fechaEnvio,
-            'numero_recordatorio' => $this->$nuemeroRecordatorio,
-        ],
-            parent::toArrayWithoutId());
+        return [
+            'id_plantilla' => $this->plantilla->idPlantilla,
+            'id_token_participante' => $this->idTokenParticipante,
+            'fecha_envio' => $this->fechaEnvio->format('Y-m-d H:i:s'),
+            'numero_recordatorio' => $this->numeroRecordatorio,
+            'estado' => $this->estado,
+        ];
+    }
+
+    public function toUpdateArray(): array
+    {
+        return [
+            'fecha_envio' => $this->fechaEnvio->format('Y-m-d H:i:s'),
+            'numero_recordatorio' => $this->numeroRecordatorio,
+        ];
     }
 }

@@ -46,7 +46,6 @@
                     </span>
                 @endif
 
-                {{-- Badge de Grupo --}}
                 <span class="badge rounded-pill bg-light text-dark border">
                     <i class="bi bi-people me-1"></i> {{ $grupo }}
                 </span>
@@ -76,7 +75,7 @@
                         </button>
                         <ul class="dropdown-menu shadow border-0">
                             <li><a class="dropdown-item" href="{{ route('form-preguntas-encuesta', ['id' => $id]) }}"><i class="bi bi-question-circle me-2"></i> Editar Preguntas</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="bi bi-envelope me-2"></i> Configurar Correos</a></li>
+                            <li><a class="dropdown-item" href="{{ route('correos-encuesta', ['id' => $id]) }}"><i class="bi bi-envelope me-2"></i> Configurar Correos</a></li>
                         </ul>
                     </div>
 

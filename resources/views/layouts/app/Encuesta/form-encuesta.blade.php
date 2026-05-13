@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title')
-    {{ $encuesta ? 'Edición' : 'Creación' }} de encuesta
+    {{ $encuesta ? 'Edición' : 'Creación' }} de {{ $esEncuesta ? 'plantilla' : 'encuesta' }}
 @endsection
 
 @section('content')
@@ -15,8 +15,8 @@
             <div class="col-md-8 col-lg-6">
                 <div class="card border-1 rounded-4">
                     <div class="card-header bg-primary text-white p-4 rounded-top-4">
-                        <h4 class="mb-0 fw-bold"><i class="bi bi-journal-plus me-2"></i>{{ $encuesta ? 'Editar' : 'Nueva' }} Encuesta</h4>
-                        <p class="mb-0 opacity-75"> {{ $encuesta ? 'Modifica los datos de la encuesta' : 'Completa los datos para crear la encuesta' }}</p>
+                        <h4 class="mb-0 fw-bold"><i class="bi bi-journal-plus me-2"></i>{{ $encuesta ? 'Editar' : 'Nueva' }} {{ $esEncuesta ? 'Encuesta' : 'Plantilla' }}</h4>
+                        <p class="mb-0 opacity-75"> {{ $encuesta ? 'Modifica los datos de la ' . ($esEncuesta ? 'encuesta' : 'plantilla') : 'Completa los datos para crear la ' . ($esEncuesta ? 'encuesta' : 'plantilla') }}</p>
                     </div>
 
                     <div class="card-body p-4">
@@ -30,10 +30,10 @@
                             </div>
                         </div>
                         @if(isset($encuesta))
-                            <form action="{{ route('actualizar-encuesta', ['id' => $encuesta->id]) }}" method="post" id="create-form">
+                            <form action="{{ $esEncuesta ? route('actualizar-encuesta', ['id' => $encuesta->id]) : route('home') }}" method="post" id="create-form">
                             @method('PUT')
                         @else
-                            <form action="{{ route('crear-encuesta', ['grupo' => $grupo]) }}" method="post" id="create-form">
+                            <form action="{{ $esEncuesta ? route('crear-encuesta', ['grupo' => $grupo]) : route('home') }}" method="post" id="create-form">
                         @endif
 
                             @csrf
@@ -42,7 +42,7 @@
                             <div class="mb-4">
                                 <label for="titulo" class="form-label fw-bold text-secondary">Título de la Encuesta:</label>
                                 <input type="text" class="form-control form-control-lg border-2 shadow-sm" 
-                                    name="titulo" id="titulo" placeholder="Ej: Satisfacción del Cliente 2026" value="{{ $encuesta->titulo?? '' }}" required>
+                                    name="titulo" id="titulo" placeholder="Ej: Satisfacción de grupo" value="{{ $encuesta->titulo?? '' }}" required>
                             </div>
 
                             <div class="mb-4">
@@ -103,11 +103,12 @@
                                         @endforeach
                                     @endforeach
                                 </div>
+                                <small class="error-text d-block mt-1" id="estilo-text-error" style="color: red; font-weight: bold;"></small>
                             </div>
 
                             <div class="d-grid mt-5">
                                 <button type="submit" class="btn btn-primary btn-lg rounded-pill fw-bold">
-                                    <i class="bi bi-check-circle me-2"></i>{{ $encuesta ? 'Actualizar Encuesta' : 'Crear Encuesta' }}
+                                    <i class="bi bi-check-circle me-2"></i>{{ $encuesta ? 'Actualizar ' . ($esEncuesta ? 'Encuesta' : 'Plantilla') : 'Crear ' . ($esEncuesta ? 'Encuesta' : 'Plantilla') }}
                                 </button>
                             </div>
                         </form>
@@ -134,6 +135,8 @@
             cardSeleccionada = document.getElementById(`estilo-${estilo}`);
             cardSeleccionada.classList.add('border-primary', 'border-3');
             cardSeleccionada.setAttribute('checked', true);
+            let estiloTextError = document.getElementById('estilo-text-error');
+            estiloTextError.innerHTML = '';
         }
 
         /**
@@ -184,25 +187,36 @@
             textError.innerHTML = ' ';
         }
 
+        // Evento que verifica que todos los campos necesarios para la encuesta esten presentes y no tengan ningún error
         document.getElementById('create-form').addEventListener('submit', function(event) {
             let fechaInicio = document.getElementById('fecha_inicio');
             let fechaTermino = document.getElementById('fecha_termino');
-            let alertContainer = document.getElementById('form-error-alert');
-            let alertMessage = document.getElementById('form-error-message');
             if (fechaInicio.classList.contains('is-invalid') || fechaTermino.classList.contains('is-invalid')) {
-                event.preventDefault();
-                alertContainer.classList.remove('d-none');
                 if (fechaInicio.classList.contains('is-invalid') && fechaTermino.classList.contains('is-invalid')) {
-                    alertMessage.innerText = 'Las fechas de inicio y de término son invalidas';
+                    addFormErrorMessage(event, 'Las fechas de inicio y de término son invalidas');
                 } else if (fechaInicio.classList.contains('is-invalid')) {
-                    alertMessage.innerText = 'La fecha de inicio es inválida (no puede ser en el pasado)';
+                    addFormErrorMessage(event, 'La fecha de inicio es inválida (no puede ser en el pasado)');
                 } else {
-                    alertMessage.innerText = 'La fecha de término debe ser posterior a la fecha de inicio';
+                    addFormErrorMessage(event, 'La fecha de término debe ser posterior a la fecha de inicio');
                 }
-                alertContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else if (!cardSeleccionada) {
+                addFormErrorMessage(event, 'Debe elegir un estilo para la encuesta')
+                let estiloTextError = document.getElementById('estilo-text-error');
+                estiloTextError.innerHTML = 'No se puede crear una encuesta sin un estilo';
             } else {
                 alertContainer.classList.add('d-none');
             }
         });
+
+        function addFormErrorMessage(event, message) {
+            event.preventDefault();
+
+            let alertContainer = document.getElementById('form-error-alert');
+            let alertMessage = document.getElementById('form-error-message');
+            alertContainer.classList.remove('d-none');
+            alertMessage.innerText = message;
+            
+            alertContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
     </script>
 @endsection

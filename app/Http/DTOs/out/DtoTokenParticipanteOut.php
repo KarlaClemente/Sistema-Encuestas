@@ -13,9 +13,9 @@ final readonly class DtoTokenParticipanteOut
         public string $emailParticipante,
     ) {}
 
-    public static function fromModel(TokenParticipante $tokenParticipante): self
+    public static function fromModel(TokenParticipante $tokenParticipante, ?DtoParticipanteOut $participante = null): self
     {
-        $participante = $tokenParticipante->participante;
+        $participante ??= DtoParticipanteOut::fromModel($tokenParticipante->participante);
 
         return new self(
             idTokenParticipante: $tokenParticipante->id_token_participante,

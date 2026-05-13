@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title')
-    Edición de encuesta
+    Edición de preguntas de encuesta
 @endsection
 
 @section('estilo')
@@ -49,7 +49,7 @@
                 </button>
             </div>
             <div class="d-grid" style="min-width: 260px; flex: 1;">
-                <a href="{{ route('correos-encuesta', ['id' => $encuesta->id]) }}" class="btn btn-primary btn-lg rounded-pill">
+                <a href="{{ route($mostrarBarraProgreso ? ($esEncuesta ? 'correos-encuesta' : 'home') : 'home', $mostrarBarraProgreso ? ['id' => $encuesta->id, 'esEncuesta' => $esEncuesta, 'mostrarBarraProgreso' => $mostrarBarraProgreso] : []) }}" class="btn btn-primary btn-lg rounded-pill">
                     Finalizar preguntas <i class="bi bi-check-lg ms-2"></i>
                 </a>
             </div>

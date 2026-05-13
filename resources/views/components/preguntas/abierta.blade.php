@@ -15,7 +15,7 @@
             </div>
         </div>
 
-        <p class="fw-semibold mb-3">{{ $pregunta->texto }}</p>
+        <p class="fw-semibold mb-3">{!! nl2br(e($pregunta->texto)) !!}</p>
         <input class="form-control" type="text" name="respuestas[{{$pregunta->orden}}]" value="Respuesta del usuario" aria-label="Disabled input example"
         @if ($disabled)
             disabled readonly

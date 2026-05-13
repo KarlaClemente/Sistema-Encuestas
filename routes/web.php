@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\CorreoController;
+use App\Http\Controllers\PlantillaController;
 use App\Http\Controllers\EncuestaController;
 use App\Http\Controllers\PreguntaController;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +25,7 @@ Route::delete('/eliminar-encuesta/{id}', [EncuestaController::class, 'destroy'])
                                         ->name('eliminar-encuesta')
                                         ->whereNumber('id');
 Route::get('/buscar-encuestas', [EncuestaController::class, 'search'])->name('buscar-encuestas');
+Route::get('/encuesta/{token}', [EncuestaController::class, 'contestar'])->name('contestar-encuesta');
 
 Route::post('/crear-pregunta', [PreguntaController::class, 'store'])->name('crear-pregunta');
 Route::delete('/eliminar-pregunta/{id}', [PreguntaController::class, 'destroy'])
@@ -34,8 +35,11 @@ Route::put('editar-pregunta/{id}', [PreguntaController::class, 'update'])
                                     ->name('editar-pregunta')
                                     ->whereNumber('id');
 
-Route::get('correos/{id}', [CorreoController::class, 'index'])
+Route::get('/encuesta/{id}/correos', [PlantillaController::class, 'index'])
                             ->name('correos-encuesta')
+                            ->whereNumber('id');
+Route::put('/encuesta/editar-correo/{id}', [PlantillaController::class, 'update'])
+                            ->name('editar-correos-encuesta')
                             ->whereNumber('id');
 
 // Route::middleware(['auth', 'verified'])->group(function () {

@@ -57,4 +57,13 @@ final readonly class DtoPreguntaIn
             'max_seleccion' => $this->maxSeleccion,
         ];
     }
+
+    public function toUpdateArray(): array {
+        return [
+            'texto' => $this->texto,
+            'id_tipo_pregunta' => $this->idTipoPregunta,
+            'min_seleccion' => $this->minSeleccion,
+            'max_seleccion' => $this->maxSeleccion,
+        ];
+    }
 }

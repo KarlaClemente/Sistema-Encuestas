@@ -24,4 +24,8 @@ abstract readonly class DtoComponentePreguntaIn
             'orden' => $this->orden
         ];
     }
+
+    public function toUpdateArray(): array {
+        return ['texto' => $this->texto, 'orden' => $this->orden];
+    }
 }

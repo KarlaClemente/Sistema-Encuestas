@@ -59,4 +59,17 @@ final readonly class DtoEncuestaIn
             'completada' => $this->completada,
         ];
     }
+
+    public function toUpdateArray(): array
+    {
+        return [
+            'id_tipo_encuesta' => $this->idTipoEncuesta,
+            'titulo' => $this->titulo,
+            'descripcion' => $this->descripcion,
+            'fecha_inicio' => $this->fechaInicio?->format('Y-m-d H:i:s'),
+            'fecha_termino' => $this->fechaTermino?->format('Y-m-d H:i:s'),
+            'texto_advertencia' => $this->textoAdvertencia,
+            'estilo' => $this->estilo,
+        ];
+    }
 }

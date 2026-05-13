@@ -17,6 +17,8 @@ class EncuestaPlantilla extends Model
         'id_tipo_encuesta',
         'titulo',
         'descripcion',
+        'fecha_inicio',
+        'fecha_termino',
         'estilo',
         'texto_advertencia',
     ];
@@ -34,5 +36,10 @@ class EncuestaPlantilla extends Model
     public function preguntas(): HasMany
     {
         return $this->hasMany(Pregunta::class, 'id_encuesta_plantilla', 'id_encuesta_plantilla');
+    }
+
+    public function plantillas(): HasMany
+    {
+        return $this->hasMany(Plantilla::class, 'id_encuesta_plantilla', 'id_encuesta_plantilla');
     }
 }

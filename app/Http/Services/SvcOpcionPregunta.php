@@ -38,7 +38,7 @@ class SvcOpcionPregunta implements SvcComponentePregunta
     public function update(DtoComponentePreguntaIn $in): DtoOpcionPreguntaOut
     {
         $opcion = OpcionPregunta::findOrFail($in->id);
-        $opcion->update($in->toArray());
+        $opcion->update($in->toUpdateArray());
         return DtoOpcionPreguntaOut::fromModel($opcion);
     }
 

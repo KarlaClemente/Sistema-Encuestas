@@ -38,7 +38,7 @@ class SvcFilaMatriz implements SvcComponentePregunta
     public function update(DtoComponentePreguntaIn $in): DtoFilaMatrizOut
     {
         $fila = FilaMatriz::findOrFail($in->id);
-        $fila->update($in->toArray());
+        $fila->update($in->toUpdateArray());
         return DtoFilaMatrizOut::fromModel($fila);
     }
 

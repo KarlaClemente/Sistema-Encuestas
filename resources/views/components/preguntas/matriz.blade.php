@@ -15,7 +15,7 @@
             </div>
         </div>
 
-        <p class="fw-semibold mb-3">{{ $pregunta->texto }}</p>
+        <p class="fw-semibold mb-3">{!! nl2br(e($pregunta->texto)) !!}</p>
         
         <div class="table-responsive">
             <table class="table table-striped align-middle table-matriz">

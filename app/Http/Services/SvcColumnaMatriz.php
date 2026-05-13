@@ -46,7 +46,7 @@ class SvcColumnaMatriz implements SvcComponentePregunta
     public function update(DtoComponentePreguntaIn $in): DtoColumnaMatrizOut
     {
         $columna = ColumnaMatriz::findOrFail($in->id);
-        $columna->update($in->toArray());
+        $columna->update($in->toUpdateArray());
 
         return DtoColumnaMatrizOut::fromModel($columna);
     }

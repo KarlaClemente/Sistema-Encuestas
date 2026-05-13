@@ -165,7 +165,7 @@ class SvcPregunta
         return DB::transaction(function () use ($dto, $id, $nombreTipo) {
             $pregunta = Pregunta::findOrFail($id);
             $anteriorTipo = $pregunta->id_tipo_pregunta;
-            $pregunta->update($dto->toArray());
+            $pregunta->update($dto->toUpdateArray());
             if ($dto->idTipoPregunta === $anteriorTipo) {
                 // Se actualiza la información de la pregunta y sus componentes
                 if ($nombreTipo === 'opcion multiple') {

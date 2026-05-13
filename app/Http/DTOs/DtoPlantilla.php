@@ -1,38 +1,52 @@
 <?php
-
 namespace App\Http\DTOs;
 
-readonly class DtoPlantilla
+use App\Models\Plantilla;
+use Illuminate\Http\Request;
+
+final readonly class DtoPlantilla
 {
     public function __construct(
-        public int $id,
+        public int $idPlantilla,
         public string $tipo,
         public string $asunto,
         public string $cuerpo,
     ) {}
 
-    public static function fromArray(array $request, string $tipoPregunta): self
+    public static function fromRequest(Request $request): self
+    {
+        return self::fromArray($request->validated());
+    }
+
+    public static function fromArray(array $arr): self
     {
         return new self(
-            id: $request['id_plantilla'],
-            tipo: $request['tipo'],
-            asunto: $request['asunto'],
-            texto: $arr['texto'],
+            idPlantilla: (int) $arr['id_plantilla'],
+            tipo: $arr['tipo'],
+            asunto: $arr['asunto'],
+            cuerpo: $arr['cuerpo'],
+        );
+    }
+
+    public static function fromModel(Plantilla $plantilla): self
+    {
+        return new self(
+            idPlantilla : $plantilla->id_plantilla,
+            tipo : $plantilla->tipo,
+            asunto : $plantilla->asunto,
+            cuerpo : $plantilla->cuerpo,
         );
     }
 
     public function toArray(): array
     {
         return [
-            'id_plantilla' => $this->$id,
-            'tipo' => $this->$tipo,
-            'asunto' => $this->$asunto,
-            'cuerpo' => $this->$cuerpo,
+            'asunto' => $this->asunto,
+            'cuerpo' => $this->cuerpo,
         ];
     }
 
-    public function toArrayWithoutId(): array
-    {
-        return array_slice($this->toArray(), 1);
+    public function toUpdateArray(): array {
+        return ['asunto' => $this->asunto, 'cuerpo' => $this->cuerpo];
     }
 }

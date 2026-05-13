@@ -25,10 +25,10 @@ class EncuestaRequest extends FormRequest
         return [
             'id_grupo' => 'required|integer|exists:grupo,id_grupo',
             'id_tipo_encuesta' => 'required_without:id_plantilla|integer|exists:tipo_encuesta,id_tipo_encuesta',
-            'id_plantilla' => 'nullable|integer|exists:encuesta_plantilla, id_encuesta_plantilla',
+            'id_plantilla' => 'nullable|integer|exists:encuesta_plantilla,id_encuesta_plantilla',
             'titulo' => 'required_without:id_plantilla|string|max:200',
-            'descripcion' => 'nullable|string| max:1000',
-            'fecha_inicio' => 'required|date|',
+            'descripcion' => 'nullable|string|max:1000',
+            'fecha_inicio' => 'required|date',
             'fecha_termino' => 'required|date|after:fecha_inicio',
             'texto_advertencia' => 'nullable|string',
             'estilo' => 'required_without:id_plantilla|string|max:100'

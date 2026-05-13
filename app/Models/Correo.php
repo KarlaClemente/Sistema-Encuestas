@@ -18,10 +18,9 @@ class Correo extends Model
     protected $fillable = [
         'id_plantilla',
         'id_token_participante',
-        'asunto',
-        'cuerpo',
         'fecha_envio',
         'numero_recordatorio',
+        'estado',
     ];
 
     protected $casts = [

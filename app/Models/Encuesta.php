@@ -62,4 +62,9 @@ class Encuesta extends Model
     {
         return $this->hasMany(TokenEncuesta::class, 'id_encuesta', 'id_encuesta');
     }
+
+    public function plantillas(): HasMany
+    {
+        return $this->hasMany(Plantilla::class, 'id_encuesta', 'id_encuesta');
+    }
 }
