@@ -6,6 +6,7 @@ use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use App\Http\Services\SvcEncuesta;
+use Illuminate\Support\Facades\Log;
 
 #[Signature('encuesta:concluir-encuestas')]
 #[Description('Concluye las encuestas que han llegado a su fecha de término')]
@@ -18,8 +19,8 @@ class ConcluirEncuesta extends Command
     {
         try {
             $svcEncuesta->concluirEncuestas();
-        } catch (\Exception $e) {
-            Log::error('Error al concluir encuestas:' . $e->getMessage());
+        } catch (\Throwable $t) {
+            Log::error('Error al concluir encuestas:' . $t->getMessage());
         }
     }
 }

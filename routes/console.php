@@ -7,6 +7,6 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Schedule::command('correos:enviar-pendientes')->everyMinute();
 Schedule::command('correos:enviar-recordatorios')->everyMinute();
+Schedule::command('correos:enviar-pendientes')->everyMinute();
 Schedule::command('encuesta:concluir-encuestas')->everyMinute();

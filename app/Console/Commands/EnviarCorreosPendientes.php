@@ -6,6 +6,7 @@ use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use App\Http\Services\SvcCorreo;
+use Illuminate\Support\Facades\Log;
 
 #[Signature('correos:enviar-pendientes')]
 #[Description('Envía los correos pendientes de encuestas programados')]
@@ -18,8 +19,8 @@ class EnviarCorreosPendientes extends Command
     {
         try {
             $svc->enviarCorreoPendientes();
-        } catch (\Exception $e) {
-            Log::error("Error al enviar correos pendientes:" . $e->getMessage());
+        } catch (\Throwable $t) {
+            Log::error("Error al enviar correos pendientes:" . $t->getMessage());
         }
     }
 }

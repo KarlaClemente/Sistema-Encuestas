@@ -30,7 +30,8 @@ class SvcEncuesta
                 ->where('fecha_termino', '>=', $now)
                 ->where('completada', false)
                 ->get()
-                ->map(fn($encuesta) => DtoEncuestaOut::fromModelWithoutPreguntas($encuesta)); 
+                ->map(fn($encuesta) => DtoEncuestaOut::fromModelWithoutPreguntas($encuesta))
+                ->toArray(); 
     }
     
     public function store(DtoEncuestaIn $in): DtoEncuestaOut
@@ -218,7 +219,7 @@ class SvcEncuesta
     public function validateEsEditable(DtoEncuestaOut $encuesta)
     {
         if ($encuesta->completada) {
-            throw new \Exception('No se pueden editar encuestas que ya finalizadas');
+            throw new \Exception('No se pueden editar encuestas ya finalizadas');
         }
         if ($encuesta->fechaInicio->isPast()) {
             throw new \Exception('No se pueden editar encuestas que ya iniciaron');
